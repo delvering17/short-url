@@ -3,6 +3,7 @@ package com.delver.shorturl.api;
 import com.delver.shorturl.api.dto.ModifyShortenUrlRequest;
 import com.delver.shorturl.api.dto.ShortUrlStatsResponse;
 import com.delver.shorturl.api.dto.ShortenUrlResponse;
+import com.delver.shorturl.application.ShortUrlDestination;
 import com.delver.shorturl.application.ShortUrlService;
 import com.delver.shorturl.domain.ShortUrl;
 import com.delver.shorturl.domain.ShortUrlStats;
@@ -29,9 +30,9 @@ public class ShortUrlController {
 
     @GetMapping("/{shortCode}")
     public ResponseEntity<ShortenUrlResponse> accessShortUrl(@PathVariable String shortCode) {
-        ShortUrl shortUrl = shortUrlService.access(shortCode);
+        ShortUrlDestination destination = shortUrlService.access(shortCode);
 
-        return ResponseEntity.ok(ShortenUrlResponse.from(shortUrl));
+        return ResponseEntity.ok(new ShortenUrlResponse(destination.originalUrl(), destination.shortCode()));
     }
 
     @GetMapping("/{shortCode}/stats")

@@ -4,3 +4,7 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+
+short-url:
+  cache:
+    ttl: 5m

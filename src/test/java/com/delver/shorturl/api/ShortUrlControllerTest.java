@@ -123,6 +123,7 @@ class ShortUrlControllerTest {
     void modifyOriginalUrl() throws Exception {
         ShortUrl shortUrl = createShortUrl("https://www.google.com");
         String replaceUrl = "http://www.naver.com";
+        accessShortUrl(shortUrl.getShortCode());
 
         ResultActions actions = mockMvc.perform(
                 put("/api/shorten/" + shortUrl.getShortCode())
@@ -139,6 +140,10 @@ class ShortUrlControllerTest {
 
         assertThat(response.originalUrl()).isEqualTo(replaceUrl);
         assertThat(response.shortCode()).isEqualTo(shortUrl.getShortCode());
+
+        mockMvc.perform(get("/api/shorten/{shortCode}", shortUrl.getShortCode()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.originalUrl").value(replaceUrl));
     }
 
     @Test
@@ -159,6 +164,7 @@ class ShortUrlControllerTest {
     @Test
     void deleteShortUrl() throws Exception {
         ShortUrl shortUrl = createShortUrl("https://www.google.com");
+        accessShortUrl(shortUrl.getShortCode());
 
         ResultActions actions = mockMvc.perform(
                 delete("/api/shorten/" + shortUrl.getShortCode())
@@ -167,6 +173,9 @@ class ShortUrlControllerTest {
         actions.andExpect(status().is(HttpStatus.NO_CONTENT.value()));
 
         assertThat(shortUrlRepository.findByShortCode(shortUrl.getShortCode()).isEmpty()).isTrue();
+
+        mockMvc.perform(get("/api/shorten/{shortCode}", shortUrl.getShortCode()))
+                .andExpect(status().isNotFound());
     }
 
     private ShortUrl createShortUrl(String longUrl) {
@@ -175,7 +184,8 @@ class ShortUrlControllerTest {
     }
 
     private void accessShortUrl(String shortCode) throws Exception {
-        mockMvc.perform(get("/api/shorten/" + shortCode).contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(get("/api/shorten/" + shortCode).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
 }

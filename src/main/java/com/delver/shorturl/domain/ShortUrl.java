@@ -1,12 +1,14 @@
 package com.delver.shorturl.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SoftDelete;
 import org.hibernate.annotations.SoftDeleteType;
 
 import java.time.LocalDateTime;
 
 @Entity
+@DynamicUpdate
 @Table(
         name = "short_urls",
         uniqueConstraints = {
@@ -47,11 +49,6 @@ public class ShortUrl {
         shortUrl.shortCode = shortCode;
         shortUrl.accessCount = 0L;
         return shortUrl;
-    }
-
-    public void updateAccessStats(LocalDateTime lastAccessedAt) {
-        this.accessCount++;
-        this.lastAccessedAt = lastAccessedAt;
     }
 
     public void modifyOriginalUrl(String originalUrl, LocalDateTime now) {
